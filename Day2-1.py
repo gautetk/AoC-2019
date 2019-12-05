@@ -15,6 +15,9 @@ memory = map(int, splitedInputCode)
 memory[1]=12
 memory[2]=2
 
+memory[1]=0
+memory[2]=1
+
 keepOn = True
 possition = 0
 while keepOn == True:

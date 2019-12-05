@@ -1,41 +1,56 @@
 import os
 
-chalange = 'Day2-1'
-sourcePath = '..\\Source\\'
-source = sourcePath + 'Day2-1' + '.txt'
-resultPath = '..\\Result\\'
-result = resultPath + chalange + '.txt'
 
-sourceFile = open(source, 'r')
-inputCode = sourceFile.read()
+def main():
+    chalange = 'Day2-2'
+    sourcePath = '..\\Source\\'
+    source = sourcePath + 'Day2-1' + '.txt'
+    resultPath = '..\\Result\\'
+    result = resultPath + chalange + '.txt'
 
-splitedInputCode = inputCode.split(',')
-memory = map(int, splitedInputCode)
+    sourceFile = open(source, 'r')
+    inputCode = sourceFile.read()
 
-memory[1]=12
-memory[2]=2
+    splitedInputCode = inputCode.split(',')
+    initialMemory = map(int, splitedInputCode)
 
+    target=19690720
+    
+    noun, verb = calculateMemoryWithTarget(initialMemory, target)
+            
+    output = str(noun)+str(verb)
+    print output
 
-keepOn = True
-instructionPointer = 0
-count = 0
-while keepOn == True and count < 1000000:
-    if memory[instructionPointer] == 1:
-        memory[memory[instructionPointer + 3]] = memory[memory[instructionPointer + 1]] + memory[memory[instructionPointer + 2]]
-    elif memory[instructionPointer] == 2:
-        memory[memory[instructionPointer + 3]] = memory[memory[instructionPointer + 1]] * memory[memory[instructionPointer + 2]]
-    elif memory[instructionPointer] == 99:
-        keepOn = False
-    instructionPointer = instructionPointer +4
-    count = count + 1
-        
+    resultFile = open(result, 'w+')
+    resultFile.write(str(output))
 
-output = memory[0]
-print output
-print memory
+    sourceFile.close
+    resultFile.close
 
-resultFile = open(result, 'w+')
-resultFile.write(str(output))
+def calculateMemoryWithTarget(initialMemory, target):
+    for noun in range(0,100):
+        for verb in range(0,100):
+            memory=initialMemory[:]
+            memory[1]=noun
+            memory[2]=verb
+            tmpOutput=runCode(memory)
+            if tmpOutput == target:
+                return noun, verb
 
-sourceFile.close
-resultFile.close
+def runCode(memory):
+    keepOn = True
+    instructionPointer = 0
+    count = 0
+    while keepOn == True and count < 1000000000:
+        if memory[instructionPointer] == 1:
+            memory[memory[instructionPointer + 3]] = memory[memory[instructionPointer + 1]] + memory[memory[instructionPointer + 2]]
+        elif memory[instructionPointer] == 2:
+            memory[memory[instructionPointer + 3]] = memory[memory[instructionPointer + 1]] * memory[memory[instructionPointer + 2]]
+        elif memory[instructionPointer] == 99:
+            keepOn = False
+        instructionPointer = instructionPointer + 4
+        count = count + 1
+    return memory[0]
+
+if __name__ == "__main__":
+    main()
