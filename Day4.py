@@ -3,7 +3,7 @@ from operator import itemgetter
 
 
 def main():
-    chalange = 'Day8'
+    chalange = 'Day4'
 
     inputRangeMin = 235741
     inputRangeMax = 706948
@@ -19,7 +19,6 @@ def part2(inputRangeMin, inputRangeMax):
             double= checkDoublePart2(number)
             if double==True:
                 valid.append(number)
-    print valid
     print len(valid)
 
 

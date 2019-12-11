@@ -19,13 +19,10 @@ def main():
 
     image = getMessage(layers, wide, tall)
 
-    print image
-
     imagePrint = [image[x:x+25] for x in range(0, len(image), 25)]
-    print imagePrint
 
     for line in imagePrint:
-			print ' '.join(line)
+		print ' '.join(line)
 
 
 def getMessage(layers, wide, tall):
