@@ -6,49 +6,76 @@ def main():
     sourcePath = '..\\Source\\'
     source = sourcePath + 'Day5' + '.txt'
 
-    sourceFile = open(source, 'r')
-    inputCode = sourceFile.read()
+    with open(source, 'r') as sourceFile:
+        inputCode = sourceFile.read()
 
     splitedInputCode = inputCode.split(',')
     initialMemory = map(int, splitedInputCode)
 
-#     target=19690720
-    
-#     noun, verb = calculateMemoryWithTarget(initialMemory, target)
-            
-#     output = str(noun)+str(verb)
-#     print output
+    inputValue = 1 #Part1
+    inputValue = 5 #Part2
 
-#     resultFile = open(result, 'w+')
-#     resultFile.write(str(output))
+    output = runCode(initialMemory, inputValue)
+    print output
 
-#     sourceFile.close
-#     resultFile.close
 
-# def calculateMemoryWithTarget(initialMemory, target):
-#     for noun in range(0,100):
-#         for verb in range(0,100):
-#             memory=initialMemory[:]
-#             memory[1]=noun
-#             memory[2]=verb
-#             tmpOutput=runCode(memory)
-#             if tmpOutput == target:
-#                 return noun, verb
+def runCode(memory, inputValue):
+    ip = 0
+    count = 0
+    output = []
+    while count < 100000000:
+        count += 1
+        istruction = memory[ip]
+        if istruction % 100 == 1:
+            memory[memory[ip + 3]] = getValue(memory, istruction,
+                                              ip, 1) + getValue(memory, istruction, ip, 2)
+            ip += 4
+        elif istruction % 100 == 2:
+            memory[memory[ip + 3]] = getValue(memory, istruction,
+                                              ip, 1) * getValue(memory, istruction, ip, 2)
+            ip += 4
+        elif istruction % 100 == 3:
+            memory[memory[ip + 1]] = inputValue
+            ip += 2
+        elif istruction % 100 == 4:
+            value = getValue(memory, istruction, ip, 1)
+            output.append(value)
+            ip += 2
+        elif istruction % 100 == 5:
+            if getValue(memory, istruction, ip, 1) != 0:
+                ip = getValue(memory, istruction, ip, 2)
+            else:
+                ip += 3
+        elif istruction % 100 == 6:
+            if getValue(memory, istruction, ip, 1) == 0:
+                ip = getValue(memory, istruction, ip, 2)
+            else:
+                ip += 3
+        elif istruction % 100 == 7:
+            if getValue(memory, istruction, ip, 1) < getValue(memory, istruction, ip, 2):
+                memory[memory[ip + 3]] = 1
+            else:
+                memory[memory[ip + 3]] = 0
+            ip += 4
+        elif istruction % 100 == 8:
+            if getValue(memory, istruction, ip, 1) == getValue(memory, istruction, ip, 2):
+                memory[memory[ip + 3]] = 1
+            else:
+                memory[memory[ip + 3]] = 0
+            ip += 4
+        elif istruction % 100 == 99:
+            break
+    return output
 
-# def runCode(memory):
-#     keepOn = True
-#     instructionPointer = 0
-#     count = 0
-#     while keepOn == True and count < 1000000000:
-#         if memory[instructionPointer] == 1:
-#             memory[memory[instructionPointer + 3]] = memory[memory[instructionPointer + 1]] + memory[memory[instructionPointer + 2]]
-#         elif memory[instructionPointer] == 2:
-#             memory[memory[instructionPointer + 3]] = memory[memory[instructionPointer + 1]] * memory[memory[instructionPointer + 2]]
-#         elif memory[instructionPointer] == 99:
-#             keepOn = False
-#         instructionPointer = instructionPointer + 4
-#         count = count + 1
-#     return memory[0]
+
+def getValue(memory, instruction, ip, valuePos):
+    mode = (instruction/(10*10**valuePos)) % 10
+    if mode == 0:
+        value = memory[memory[ip+valuePos]]
+    else:
+        value = memory[ip+valuePos]
+    return value
+
 
 if __name__ == "__main__":
     main()
