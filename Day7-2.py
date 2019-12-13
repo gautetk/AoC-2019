@@ -12,7 +12,6 @@ def main():
     splitedInputCode = inputCode.split(',')
     initialMemory = map(int, splitedInputCode)
 
-
     part2(initialMemory)
 
 
@@ -26,36 +25,49 @@ def part2(initialMemory):
                 for d in filter(lambda d: d not in [a, b, c], initialSettings):
                     for e in filter(lambda e: e not in [a, b, c, d], initialSettings):
                         aSettings = [a, b, c, d, e]
-                        signal = 0
-                        ip = [0]*5
-                        # outputs = [None]*5
-                        memory = [initialMemory[:]]*5
-                        for j in range(100):
-                            for i, setting in enumerate(aSettings):
-                                signal, memory[i] = runCode(memory[i], [setting, signal], ip[i])
-                        if signal > maxSignal:
-                            maxSignal = signal
+                        maxSignal = getSignal(aSettings, initialMemory, maxSignal)
     print maxSignal
 
 
-def runCode(memory, inputValues, ip):
-    i = 0
+def getSignal(aSettings, initialMemory, maxSignal):
+
+    ip = [0]*5
+    outputs = [None]*5
+    signal = [0]
+    inputs = map(lambda x: [x], aSettings)
+    inputPos = [0]*5
+    memory = [initialMemory[:]]*5
+    finished = [False]*5
+    while finished[4] != True:
+        for i, setting in enumerate(aSettings):
+            inputs[i].extend(signal)
+            ip[i], memory[i], outputs[i], inputPos[i], finished[i] = runCode(ip[i], memory[i], inputs[i], inputPos[i])
+            signal = outputs[i]
+    if signal > maxSignal:
+        maxSignal = signal
+    return maxSignal
+
+
+def runCode(ip, memory, inputValues, inputPos):
     count = 0
+    finished = False
     output = []
     while count < 100000000:
         count += 1
         istruction = memory[ip]
         if istruction % 100 == 1:
-            memory[memory[ip + 3]] = getValue(memory, istruction,ip, 1) + getValue(memory, istruction, ip, 2)
+            memory[memory[ip + 3]] = getValue(memory, istruction, ip, 1) + getValue(memory, istruction, ip, 2)
             ip += 4
         elif istruction % 100 == 2:
-            memory[memory[ip + 3]] = getValue(memory, istruction,ip, 1) * getValue(memory, istruction, ip, 2)
+            memory[memory[ip + 3]] = getValue(memory, istruction, ip, 1) * getValue(memory, istruction, ip, 2)
             ip += 4
         elif istruction % 100 == 3:
-            memory[memory[ip + 1]] = inputValues[i]
-            if i == 1:
-                i = i+1
-            ip += 2
+            if len(inputValues) < inputPos+1:
+                return ip, memory, output, inputPos, finished
+            else:
+                memory[memory[ip + 1]] = inputValues[inputPos]
+                inputPos += 1
+                ip += 2
         elif istruction % 100 == 4:
             value = getValue(memory, istruction, ip, 1)
             output.append(value)
@@ -83,8 +95,9 @@ def runCode(memory, inputValues, ip):
                 memory[memory[ip + 3]] = 0
             ip += 4
         elif istruction % 100 == 99:
-            break
-    return output[0], memory[:]
+            finished = True
+            return ip, memory, output, inputPos, finished
+    # return output[0], memory[:]
 
 
 def getValue(memory, instruction, ip, valuePos):
